@@ -115,6 +115,12 @@ body {
     color: #0a0a0a;
 }
 
+/* Cart badge styles */
+.cart-icon-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
 /* Enhanced Dashboard Styling */
 .dashboard-container {
     padding: 60px 40px;
@@ -133,6 +139,7 @@ body {
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     gap: 30px;
     margin-top: 30px;
+    padding: 145px;
 }
 
 /* Enhanced Dashboard Cards */

@@ -1,3 +1,4 @@
+@extends("layouts.app")
 <div class="dashboard-grid">
     <!-- Developer Tools Card -->
     <div class="dashboard-card animated-card">
@@ -112,10 +113,6 @@
                 <div class="analytics-item">
                     <div class="analytics-value">{{ \App\Models\Product::where('stock', '>', 0)->count() }}</div>
                     <div class="analytics-label">Products in Stock</div>
-                </div>
-                <div class="analytics-item">
-                    <div class="analytics-value">{{ \App\Models\Rating::avg('rating') ? number_format(\App\Models\Rating::avg('rating'), 1) : '0.0' }}</div>
-                    <div class="analytics-label">Avg Product Rating</div>
                 </div>
             </div>
         </div>

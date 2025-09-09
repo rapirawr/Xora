@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<title>Black Market Shop</title>
+<title>{{ config("app.name") }}</title>
 <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 @stack('styles')
@@ -12,15 +12,20 @@
 <body>
 
 <nav class="navbar">
-    <div class="logo">Black Market</div>
+    <div class="logo">{{ config("app.name") }}</div>
     <div class="menu">
         <a href="{{ url('/') }}">_Home</a>
         <a href="{{ route('store') }}">_Store</a>
     </div>
     <div class="auth-links">
         @auth
-                <a href="{{ route('cart.index') }}"><i class="fa-solid fa-cart-shopping"></i></a>
-                <a href="{{ route('profile') }}"><i class="fa fa-user"></i></a>
+            <a href="{{ route('cart.index') }}" class="cart-icon-wrapper" style="position: relative; display: inline-block;">
+                <i class="fa-solid fa-cart-shopping"></i>
+                @if($cartItemCount > 0)
+                    <span class="cart-badge">{{ $cartItemCount }}</span>
+                @endif
+            </a>
+            <a href="{{ route('profile') }}"><i class="fa fa-user"></i></a>
         @else
             <a href="{{ route('login') }}" class="login-btn">Login</a>
             <a href="{{ route('register') }}" class="register-btn">Sign Up</a>

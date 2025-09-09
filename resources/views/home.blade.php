@@ -11,10 +11,10 @@
 
     <div class="content-container">
         <h1 class="hero-text neon-text">
-            Black <br> Market
+            Xora <br> 
         </h1>
         <p class="hero-text">
-            Growing space technology accelerates the discovery and exploration of celestial structures.
+           a modern online shop that makes shopping easy, fast, and convenient.
         </p>
     </div>
 
