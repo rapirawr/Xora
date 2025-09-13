@@ -2,12 +2,14 @@
     <!-- Account Overview Card -->
     <div class="dashboard-card animated-card">
         <div class="card-header">
-            <i class="fas fa-user-circle card-icon"></i>
+            <div class="action-icon">    
+                <i class="fas fa-user-circle "></i>
+            </div>
             <h2 class="neon-subtext">My Account</h2>
         </div>
         <div class="card-content">
-            <div class="account-stats" style="display: flex; align-items: center; gap: 20px;">
-                <img src="{{ $user->profile_photo_url }}" alt="Profile Photo" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #333;">
+            <div class="account-stats">
+                <img src="{{ $user->profile_photo_url }}" alt="Profile Photo" class="profile-photo">
                 <div>
                     <div class="stat-item">
                         <span class="stat-number">{{ $user->name }}</span>
@@ -29,7 +31,9 @@
     <!-- Quick Actions Card -->
     <div class="dashboard-card animated-card">
         <div class="card-header">
-            <i class="fas fa-bolt card-icon"></i>
+            <div class="action-icon">
+                <i class="fas fa-bolt "></i>
+            </div>
             <h2 class="neon-subtext">Quick Actions</h2>
         </div>
         <div class="card-content">
@@ -53,10 +57,6 @@
                     <i class="fas fa-history"></i>
                     <span>Order History</span>
                 </a>
-                <a href="#" class="action-btn">
-                    <i class="fas fa-heart"></i>
-                    <span>My Wishlist</span>
-                </a>
             </div>
         </div>
     </div>
@@ -64,7 +64,9 @@
     <!-- Recent Activity Card -->
     <div class="dashboard-card animated-card">
         <div class="card-header">
-            <i class="fas fa-clock card-icon"></i>
+            <div class="action-icon">
+                <i class="fas fa-clock "></i>
+            </div>
             <h2 class="neon-subtext">Recent Activity</h2>
         </div>
         <div class="card-content">
@@ -94,26 +96,16 @@
     <!-- Statistics Card -->
     <div class="dashboard-card animated-card">
         <div class="card-header">
-            <i class="fas fa-chart-bar card-icon"></i>
-            <h2 class="neon-subtext">Statistics</h2>
+            <div class="action-icon">
+                <i class="fas fa-chart-bar "></i>
+            </div>
+                <h2 class="neon-subtext">Statistics</h2>
         </div>
         <div class="card-content">
             <div class="stats-grid">
                 <div class="stat-box">
                     <div class="stat-value">0</div>
                     <div class="stat-title">Orders</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value">0</div>
-                    <div class="stat-title">Reviews</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value">0</div>
-                    <div class="stat-title">Wishlist</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value">0</div>
-                    <div class="stat-title">Points</div>
                 </div>
             </div>
         </div>

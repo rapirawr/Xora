@@ -53,9 +53,36 @@ class SellerController extends Controller
             'sold' => 'nullable|integer|min:0',
             'stock' => 'nullable|integer|min:0',
             'category' => 'required|string|in:' . implode(',', array_keys(\App\Models\Product::getCategoryOptions())),
+            'has_variants' => 'required|boolean',
+            'variants' => 'nullable|array',
+            'variants.*.variant_name' => 'required_with:variants|string|max:255',
+            'variants.*.variant_value' => 'required_with:variants|string|max:255',
+            'variants.*.price' => 'nullable|numeric|min:0',
+            'variants.*.stock' => 'nullable|integer|min:0',
+            'variants.*.image_url' => 'nullable|url',
+            'images' => 'nullable|array',
+            'images.*' => 'nullable|url',
         ]);
 
-        Auth::user()->products()->create($request->all());
+        $productData = $request->only([
+            'name', 'description', 'price', 'image_url', 'sold', 'stock', 'category', 'has_variants'
+        ]);
+
+        $product = Auth::user()->products()->create($productData);
+
+        // Save variants if has_variants is true
+        if ($request->has_variants && $request->filled('variants')) {
+            foreach ($request->variants as $variantData) {
+                $product->variants()->create($variantData);
+            }
+        }
+
+        // Save multiple images
+        if ($request->filled('images')) {
+            foreach ($request->images as $imageUrl) {
+                $product->images()->create(['image_url' => $imageUrl]);
+            }
+        }
 
         return redirect()->route('seller.products.manage')->with('success', 'Product created successfully!');
     }
@@ -86,9 +113,48 @@ class SellerController extends Controller
             'sold' => 'nullable|integer|min:0',
             'stock' => 'nullable|integer|min:0',
             'category' => 'required|string|in:' . implode(',', array_keys(\App\Models\Product::getCategoryOptions())),
+            'has_variants' => 'required|boolean',
+            'variants' => 'nullable|array',
+            'variants.*.variant_name' => 'required_with:variants|string|max:255',
+            'variants.*.variant_value' => 'required_with:variants|string|max:255',
+            'variants.*.price' => 'nullable|numeric|min:0',
+            'variants.*.stock' => 'nullable|integer|min:0',
+            'variants.*.image_url' => 'nullable|url',
+            'images' => 'nullable|array',
+            'images.*' => 'nullable|url',
         ]);
 
-        $product->update($request->all());
+        $productData = $request->only([
+            'name', 'description', 'price', 'image_url', 'sold', 'stock', 'category', 'has_variants'
+        ]);
+
+        $product->update($productData);
+
+        // Update variants
+        if ($request->has_variants && $request->filled('variants')) {
+            // Delete existing variants
+            $product->variants()->delete();
+            // Create new variants
+            foreach ($request->variants as $variantData) {
+                $product->variants()->create($variantData);
+            }
+        } else {
+            // If no variants, delete all existing variants
+            $product->variants()->delete();
+        }
+
+        // Update images
+        if ($request->filled('images')) {
+            // Delete existing images
+            $product->images()->delete();
+            // Create new images
+            foreach ($request->images as $imageUrl) {
+                $product->images()->create(['image_url' => $imageUrl]);
+            }
+        } else {
+            // If no images, delete all existing images
+            $product->images()->delete();
+        }
 
         return redirect()->route('seller.products.manage')->with('success', 'Product updated successfully!');
     }
@@ -150,5 +216,21 @@ class SellerController extends Controller
         $orderHeader->orders()->update(['status' => $newStatus]);
 
         return redirect()->back()->with('success', 'Order status updated successfully!');
+    }
+
+    // Destroy seller (only for developers)
+    public function destroy(\App\Models\User $user)
+    {
+        if (Auth::user()->role !== 'developer') {
+            abort(403, 'Only developers can delete sellers.');
+        }
+
+        if ($user->role !== 'seller') {
+            abort(403, 'User is not a seller.');
+        }
+
+        $user->delete();
+
+        return redirect()->route('developer.users')->with('success', 'Seller deleted successfully.');
     }
 }

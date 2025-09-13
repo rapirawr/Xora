@@ -18,6 +18,18 @@ class StoreController extends Controller
         // Mulai dengan query dasar untuk semua produk
         $query = Product::query();
 
+        // Search functionality
+        if ($request->filled('search')) {
+            $searchTerm = $request->input('search');
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('name', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhere('description', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhereHas('user', function($userQuery) use ($searchTerm) {
+                      $userQuery->where('name', 'LIKE', '%' . $searchTerm . '%');
+                  });
+            });
+        }
+
         // Filter berdasarkan kategori
         if ($request->filled('category')) {
             $query->where('category', $request->input('category'));

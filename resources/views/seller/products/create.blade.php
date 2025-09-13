@@ -49,16 +49,95 @@
                         @enderror
                     </div>
 
+                    <!-- Product Variants Section -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-list"></i> Product Variants *
+                        </label>
+                        <div class="variant-options">
+                            <label class="radio-label">
+                                <input type="radio" name="has_variants" value="0" {{ old('has_variants', '0') == '0' ? 'checked' : '' }}>
+                                No Variants
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="has_variants" value="1" {{ old('has_variants') == '1' ? 'checked' : '' }}>
+                                With Variants
+                            </label>
+                        </div>
+                        @error('has_variants')
+                            <span class="error-message">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <!-- Variants Details (shown when "With Variants" is selected) -->
+                    <div id="variants-section" style="display: {{ old('has_variants') == '1' ? 'block' : 'none' }};">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-plus"></i> Add Variants
+                            </label>
+                            <button type="button" id="add-variant-btn" class="btn btn-secondary">
+                                <i class="fas fa-plus"></i> Add Variant
+                            </button>
+                        </div>
+
+                        <div id="variants-container">
+                            @if(old('variants'))
+                                @foreach(old('variants') as $index => $variant)
+                                    <div class="variant-group" data-index="{{ $index }}">
+                                        <div class="variant-header">
+                                            <h4>Variant {{ $index + 1 }}</h4>
+                                            <button type="button" class="remove-variant-btn btn btn-danger btn-sm">
+                                                <i class="fas fa-trash"></i> Remove
+                                            </button>
+                                        </div>
+                                        <div class="variant-fields">
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label class="form-label">Variant Name *</label>
+                                                    <input type="text" name="variants[{{ $index }}][variant_name]" class="form-input"
+                                                           value="{{ $variant['variant_name'] ?? '' }}" placeholder="e.g., Color, Size">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="form-label">Variant Value *</label>
+                                                    <input type="text" name="variants[{{ $index }}][variant_value]" class="form-input"
+                                                           value="{{ $variant['variant_value'] ?? '' }}" placeholder="e.g., Red, L">
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label class="form-label">Price (Optional)</label>
+                                                    <input type="number" name="variants[{{ $index }}][price]" class="form-input"
+                                                           value="{{ $variant['price'] ?? '' }}" step="0.01" min="0">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="form-label">Stock (Optional)</label>
+                                                    <input type="number" name="variants[{{ $index }}][stock]" class="form-input"
+                                                           value="{{ $variant['stock'] ?? '' }}" min="0">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Image URL (Optional)</label>
+                                                <input type="url" name="variants[{{ $index }}][image_url]" class="form-input"
+                                                       value="{{ $variant['image_url'] ?? '' }}" placeholder="https://example.com/image.jpg">
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endif
+                        </div>
+                    </div>
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="price" class="form-label">
-                                <i class="fas fa-dollar-sign"></i> Price *
+                                <i class="fas fa-money-bill-wave"></i> Price (Rp) *
                             </label>
                             <div class="input-group">
-                                <span class="input-prefix">$</span>
-                                <input type="number" id="price" name="price" class="form-input"
-                                       step="0.01" min="0" value="{{ old('price') }}" required
-                                       placeholder="0.00">
+                                <span class="input-prefix">Rp</span>
+                                <input type="text" id="price" name="price" class="form-input"
+                                       value="{{ old('price') }}" required
+                                       placeholder="0">
+                                <input type="hidden" id="price_raw" name="price_raw" value="{{ old('price') }}">
                             </div>
                             @error('price')
                                 <span class="error-message">{{ $message }}</span>
@@ -85,12 +164,12 @@
                         <label for="category" class="form-label">
                             <i class="fas fa-list"></i> Category
                         </label>
-                    <select id="category" name="category" class="form-select" required>
-                        <option value="" disabled selected>Select Category</option>
-                        @foreach(\App\Models\Product::getCategoryOptions() as $key => $label)
-                            <option value="{{ $key }}" {{ old('category') == $key ? 'selected' : '' }}>{{ $label }}</option>
-                        @endforeach
-                    </select>
+                        <select id="category" name="category" class="form-select" required>
+                            <option value="" disabled selected>Select Category</option>
+                            @foreach(\App\Models\Product::getCategoryOptions() as $key => $label)
+                                <option value="{{ $key }}" {{ old('category') == $key ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
                         @error('category')
                             <span class="error-message">{{ $message }}</span>
                         @enderror
@@ -98,7 +177,7 @@
 
                     <div class="form-group">
                         <label for="image_url" class="form-label">
-                            <i class="fas fa-image"></i> Image URL *
+                            <i class="fas fa-image"></i> Main Image URL *
                         </label>
                         <input type="url" id="image_url" name="image_url" class="form-input"
                                value="{{ old('image_url') }}" required
@@ -108,7 +187,27 @@
                         @enderror
                     </div>
 
-
+                    <!-- Multiple Images Section -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-images"></i> Additional Images
+                        </label>
+                        <div id="images-container">
+                            <div class="image-input-group">
+                                <input type="url" name="images[]" class="form-input"
+                                       placeholder="https://example.com/image.jpg">
+                                <button type="button" class="btn-remove-image" onclick="removeImageField(this)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add-image" onclick="addImageField()">
+                            <i class="fas fa-plus"></i> Add Image
+                        </button>
+                        @error('images.*')
+                            <span class="error-message">{{ $message }}</span>
+                        @enderror
+                    </div>
                 </div>
             </div>
 
@@ -323,6 +422,97 @@
     transform: translateY(-2px);
 }
 
+/* Variant and Image Styles */
+.variant-options {
+    display: flex;
+    gap: 20px;
+    margin-top: 8px;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.radio-label input[type="radio"] {
+    margin: 0;
+    width: 16px;
+    height: 16px;
+}
+
+.variant-group {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.variant-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.variant-header h4 {
+    margin: 0;
+    color: #fff;
+    font-size: 16px;
+}
+
+.variant-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.image-input-group {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.btn-add-variant,
+.btn-add-image,
+.btn-remove-variant,
+.btn-remove-image {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 12px;
+}
+
+.btn-add-variant:hover,
+.btn-add-image:hover {
+    background: rgba(0, 123, 255, 0.2);
+    border-color: #007bff;
+}
+
+.btn-remove-variant:hover,
+.btn-remove-image:hover {
+    background: rgba(255, 107, 107, 0.2);
+    border-color: #ff6b6b;
+}
+
+.btn-add-variant,
+.btn-add-image {
+    margin-top: 10px;
+    width: fit-content;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .form-grid {
@@ -333,6 +523,26 @@
     .form-row {
         grid-template-columns: 1fr;
         gap: 15px;
+    }
+
+    .variant-options {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .variant-group {
+        padding: 10px;
+    }
+
+    .variant-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .image-input-group {
+        grid-template-columns: 1fr;
+        gap: 8px;
     }
 
     .form-actions {
@@ -357,55 +567,173 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Image preview functionality
     const imageUrlInput = document.getElementById('image_url');
     const imagePreview = document.getElementById('image-preview');
-
-    imageUrlInput.addEventListener('input', function() {
-        const url = this.value.trim();
-        if (url) {
-            imagePreview.src = url;
-            imagePreview.style.display = 'block';
-        } else {
-            imagePreview.src = '{{ asset("assets/depan.png") }}';
-        }
-    });
-
-    // Form validation enhancement
+    const priceInput = document.getElementById('price');
+    const stockInput = document.getElementById('stock');
     const form = document.querySelector('form');
     const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
 
+    // Image preview
+    imageUrlInput.addEventListener('input', function() {
+        const url = this.value.trim();
+        imagePreview.src = url ? url : '{{ asset("assets/depan.png") }}';
+    });
+
+    // Validation visual feedback
     inputs.forEach(input => {
         input.addEventListener('blur', function() {
-            if (this.value.trim() === '') {
-                this.style.borderColor = '#ff6b6b';
-            } else {
-                this.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-            }
+            this.style.borderColor = this.value.trim() === '' ? '#ff6b6b' : 'rgba(255, 255, 255, 0.1)';
         });
-
         input.addEventListener('focus', function() {
             this.style.borderColor = '#007bff';
         });
     });
 
-    // Price input formatting
-    const priceInput = document.getElementById('price');
-    priceInput.addEventListener('input', function() {
-        let value = parseFloat(this.value);
-        if (value < 0) {
-            this.value = 0;
+    // Format Rupiah
+    function formatRupiah(angka, prefix) {
+        let number_string = angka.replace(/[^,\d]/g, '').toString(),
+            split = number_string.split(','),
+            sisa = split[0].length % 3,
+            rupiah = split[0].substr(0, sisa),
+            ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+        if (ribuan) {
+            let separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
         }
+
+        rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
+        return prefix === undefined ? rupiah : (rupiah ? prefix + rupiah : '');
+    }
+
+    priceInput.addEventListener('input', function() {
+        this.value = formatRupiah(this.value, '');
+        document.getElementById('price_raw').value = this.value.replace(/\./g, '');
     });
 
-    // Stock input validation
-    const stockInput = document.getElementById('stock');
+    // Stock minimal 0
     stockInput.addEventListener('input', function() {
-        let value = parseInt(this.value);
-        if (value < 0) {
-            this.value = 0;
-        }
+        if (parseInt(this.value) < 0) this.value = 0;
+    });
+
+    // Replace price with raw before submit
+    form.addEventListener('submit', function() {
+        priceInput.value = document.getElementById('price_raw').value;
+    });
+
+    // Variant selection handling
+    const variantRadios = document.querySelectorAll('input[name="has_variants"]');
+    const variantsSection = document.getElementById('variants-section');
+
+    variantRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === '1') {
+                variantsSection.style.display = 'block';
+            } else {
+                variantsSection.style.display = 'none';
+            }
+        });
+    });
+
+    // Add variant field
+    document.getElementById('add-variant-btn').addEventListener('click', function() {
+        const container = document.getElementById('variants-container');
+        const index = container.children.length;
+        const variantGroup = document.createElement('div');
+        variantGroup.className = 'variant-group';
+        variantGroup.setAttribute('data-index', index);
+        variantGroup.innerHTML = `
+            <div class="variant-header">
+                <h4>Variant ${index + 1}</h4>
+                <button type="button" class="remove-variant-btn btn btn-danger btn-sm">
+                    <i class="fas fa-trash"></i> Remove
+                </button>
+            </div>
+            <div class="variant-fields">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Variant Name *</label>
+                        <input type="text" name="variants[${index}][variant_name]" class="form-input" placeholder="e.g., Color, Size" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Variant Value *</label>
+                        <input type="text" name="variants[${index}][variant_value]" class="form-input" placeholder="e.g., Red, L" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Price (Optional)</label>
+                        <input type="number" name="variants[${index}][price]" class="form-input" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Stock (Optional)</label>
+                        <input type="number" name="variants[${index}][stock]" class="form-input" min="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Image URL (Optional)</label>
+                    <input type="url" name="variants[${index}][image_url]" class="form-input" placeholder="https://example.com/image.jpg">
+                </div>
+            </div>
+        `;
+        container.appendChild(variantGroup);
+
+        // Add event listener to remove button
+        variantGroup.querySelector('.remove-variant-btn').addEventListener('click', function() {
+            variantGroup.remove();
+            updateVariantIndices();
+        });
+    });
+
+    // Function to update variant indices after removal
+    function updateVariantIndices() {
+        const groups = document.querySelectorAll('.variant-group');
+        groups.forEach((group, index) => {
+            group.setAttribute('data-index', index);
+            group.querySelector('h4').textContent = `Variant ${index + 1}`;
+            const inputs = group.querySelectorAll('input');
+            inputs.forEach(input => {
+                const name = input.name.replace(/\[\d+\]/, `[${index}]`);
+                input.name = name;
+            });
+        });
+    }
+
+    // Add event listeners to existing remove buttons
+    document.querySelectorAll('.remove-variant-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            this.closest('.variant-group').remove();
+            updateVariantIndices();
+        });
+    });
+
+    // Add image field
+    document.querySelector('.btn-add-image').addEventListener('click', function() {
+        const container = document.getElementById('images-container');
+        const imageGroup = document.createElement('div');
+        imageGroup.className = 'image-input-group';
+        imageGroup.innerHTML = `
+            <input type="url" name="images[]" class="form-input" placeholder="https://example.com/image.jpg">
+            <button type="button" class="btn-remove-image">
+                <i class="fas fa-trash"></i>
+            </button>
+        `;
+        container.appendChild(imageGroup);
+
+        // Add event listener to remove button
+        imageGroup.querySelector('.btn-remove-image').addEventListener('click', function() {
+            imageGroup.remove();
+        });
+    });
+
+    // Add event listeners to existing remove buttons
+    document.querySelectorAll('.btn-remove-image').forEach(button => {
+        button.addEventListener('click', function() {
+            this.closest('.image-input-group').remove();
+        });
     });
 });
 </script>
+
 @endsection

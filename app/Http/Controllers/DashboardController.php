@@ -10,7 +10,50 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
-        return view('dashboard', compact('user'));
+
+        // Analytics data for sellers
+        if ($user->role === 'seller') {
+            $currentMonth = \Carbon\Carbon::now()->format('Y-m');
+            $lastMonth = \Carbon\Carbon::now()->subMonth()->format('Y-m');
+
+            $currentRevenue = \App\Models\OrderHeader::where('seller_id', $user->id)
+                ->where('status', 'delivered')
+                ->where('created_at', 'like', $currentMonth . '%')
+                ->sum('total_price');
+
+            $lastRevenue = \App\Models\OrderHeader::where('seller_id', $user->id)
+                ->where('status', 'delivered')
+                ->where('created_at', 'like', $lastMonth . '%')
+                ->sum('total_price');
+
+            if ($lastRevenue > 0) {
+                $growth = (($currentRevenue - $lastRevenue) / $lastRevenue) * 100;
+            } else {
+                $growth = 100; // If no revenue last month, show 100% growth
+            }
+
+            $totalOrders = \App\Models\OrderHeader::where('seller_id', $user->id)->count();
+            $deliveredOrders = \App\Models\OrderHeader::where('seller_id', $user->id)->where('status', 'delivered')->count();
+            $totalRevenue = \App\Models\OrderHeader::where('seller_id', $user->id)->where('status', 'delivered')->sum('total_price');
+
+            $analytics = [
+                'pageViews' => rand(100, 999), // Placeholder - implement actual tracking later
+                'visitors' => rand(50, 200), // Placeholder - implement actual tracking later
+                'conversions' => $totalOrders,
+                'avgRating' => $user->products->avg('rating') ?: 0,
+                'stockInCount' => $user->products->where('stock', '>', 0)->count(),
+                'stockTotalCount' => $user->products->count(),
+                'revenueGrowth' => $growth,
+                'currentRevenue' => $currentRevenue,
+                'totalRevenue' => $totalRevenue,
+                'totalOrders' => $totalOrders,
+                'deliveredOrders' => $deliveredOrders,
+            ];
+        } else {
+            $analytics = null;
+        }
+
+        return view('dashboard', compact('user', 'analytics'));
     }
 
     public function profile()

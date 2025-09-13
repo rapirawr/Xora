@@ -25,8 +25,8 @@ class ProductController extends Controller
     // Metode show() yang sudah ada
     public function show(Product $product)
     {
-        // Load the user relationship to display seller information
-        $product->load('user');
+        // Load the user, images, and variants relationships to display seller information, gallery, and variants
+        $product->load(['user', 'images', 'variants']);
 
         return view('product-preview', compact('product'));
     }

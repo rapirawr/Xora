@@ -9,7 +9,7 @@
 
     <div class="dashboard-card">
         <h2>Total Sales</h2>
-        <p>$12,500</p>
+        <p>Rp12.500</p>
         <p>Sales data and charts will be displayed here.</p>
     </div>
 </div>

@@ -38,9 +38,14 @@
                     <tbody>
                         @foreach($orderHeader->orders as $order)
                         <tr>
-                            <td>{{ $order->product->name }}</td>
+                            <td>
+                                {{ $order->product->name }}
+                                @if($order->variant)
+                                    <br><small class="variant-info">{{ $order->variant->variant_name }}: {{ $order->variant->variant_value }}</small>
+                                @endif
+                            </td>
                             <td>{{ $order->quantity }}</td>
-                            <td>Rp{{ number_format($order->product->price, 0, ',', '.') }}</td>
+                            <td>Rp{{ number_format($order->variant ? $order->variant->price : $order->product->price, 0, ',', '.') }}</td>
                             <td>Rp{{ number_format($order->total_price, 0, ',', '.') }}</td>
                         </tr>
                         @endforeach
@@ -85,7 +90,7 @@
         @endforeach
     @else
         <div class="dashboard-card">
-            <p>No orders found. Your products haven't been purchased yet.</p>
+            <p>No orders found.</p>
         </div>
     @endif
 </div>
@@ -147,5 +152,10 @@
 
 .btn-primary { background: #007bff; color: white; }
 .btn-success { background: #28a745; color: white; }
+
+.variant-info {
+    color: #666;
+    font-style: italic;
+}
 </style>
 

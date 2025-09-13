@@ -23,6 +23,7 @@ class Product extends Model
         'stock',
         'user_id',
         'category',
+        'has_variants',
     ];
 
     /**
@@ -84,6 +85,14 @@ class Product extends Model
     public function images()
     {
         return $this->hasMany(ProductImage::class);
+    }
+
+    /**
+     * Get the variants for the product.
+     */
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class);
     }
 
     /**

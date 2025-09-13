@@ -10,6 +10,7 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'product_id',
+        'variant_id',
         'quantity',
         'total_price',
         'status',
@@ -36,5 +37,10 @@ class Order extends Model
     public function orderHeader(): BelongsTo
     {
         return $this->belongsTo(OrderHeader::class);
+    }
+
+    public function variant(): BelongsTo
+    {
+        return $this->belongsTo(ProductVariant::class);
     }
 }

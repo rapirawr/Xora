@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
 <div class="dashboard-container">
     <div class="dashboard-header">
         <h1 class="neon-text">My Orders</h1>
@@ -40,10 +41,13 @@
                                         <img src="{{ $order->product->image_url }}" alt="{{ $order->product->name }}" class="product-thumb">
                                     @endif
                                     <span>{{ $order->product->name }}</span>
+                                    @if($order->variant)
+                                        <br><small class="variant-info">{{ $order->variant->variant_name }}: {{ $order->variant->variant_value }}</small>
+                                    @endif
                                 </div>
                             </td>
                             <td>{{ $order->quantity }}</td>
-                            <td>Rp{{ number_format($order->product->price, 0, ',', '.') }}</td>
+                            <td>Rp{{ number_format($order->variant ? $order->variant->price : $order->product->price, 0, ',', '.') }}</td>
                             <td>Rp{{ number_format($order->total_price, 0, ',', '.') }}</td>
                         </tr>
                         @endforeach
@@ -103,17 +107,17 @@
 .status-delivered { color: #17a2b8; }
 .status-cancelled { color: #dc3545; }
 
-/* Receipt Card Styling */
-.receipt-card {
-    background: #fff;
-    border: 2px solid #333;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    font-family: 'Courier New', monospace;
-    position: relative;
-}
+    /* Receipt Card Styling */
+    .receipt-card {
+        background: #fff;
+        border: 2px solid #333;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        font-family: 'Poppins', sans-serif;
+        position: relative;
+    }
 
 .receipt-card::before {
     content: '';

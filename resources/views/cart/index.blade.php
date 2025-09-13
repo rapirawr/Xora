@@ -26,6 +26,12 @@
                         </div>
                         <div class="item-details">
                             <h3 class="item-name">{{ $item->product->name }}</h3>
+                            @if($item->variant)
+                                <p class="item-variant">
+                                    <span class="variant-label">Varian:</span>
+                                    <span class="variant-value">{{ $item->variant->variant_name }}: {{ $item->variant->variant_value }}</span>
+                                </p>
+                            @endif
                             <p class="item-price">Rp{{ number_format($item->price, 0, ',', '.') }}</p>
                             <p class="item-seller">Seller: {{ $item->product->user->name ?? 'Unknown' }}</p>
                         </div>
@@ -101,3 +107,12 @@ function changeQuantity(button, change) {
 }
 </script>
         {{-- @endsection --}}
+<style>
+    .quantity-controls {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    background-color: #333;
+    border-radius: 20px;
+    padding: 5px;
+    }
+</style>

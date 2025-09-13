@@ -22,6 +22,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/store', [StoreController::class, 'index'])->name('store');
+Route::get('/store/{usernameSeller}', [App\Http\Controllers\SellerStoreController::class, 'show'])->name('store.seller');
 Route::get('/product/{product}', [ProductController::class, 'show'])->name('product.show');
 
 /*
@@ -54,14 +55,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
 
-    // Cart routes
-    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-    Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
-    Route::patch('/cart/update/{cartItem}', [CartController::class, 'update'])->name('cart.update');
-    Route::delete('/cart/remove/{cartItem}', [CartController::class, 'remove'])->name('cart.remove');
-    Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
-    Route::get('/checkout', [CartController::class, 'showCheckout'])->name('checkout.show');
-    Route::post('/checkout', [CartController::class, 'processCheckout'])->name('checkout.process');
+// Cart routes
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
+Route::patch('/cart/update/{cartItem}', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/cart/remove/{cartItem}', [CartController::class, 'remove'])->name('cart.remove');
+Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+Route::get('/checkout', [CartController::class, 'showCheckout'])->name('checkout.show');
+Route::post('/checkout', [CartController::class, 'processCheckout'])->name('checkout.process');
+
+
 
     // Order routes
     Route::get('/orders', [App\Http\Controllers\OrderController::class, 'index'])->name('orders.index');
@@ -108,4 +111,5 @@ Route::middleware(['auth', 'developer'])->group(function () {
     Route::patch('/developer/users/{user}/role', [App\Http\Controllers\DeveloperController::class, 'updateUserRole'])->name('developer.users.update-role');
     Route::delete('/developer/users/{user}', [App\Http\Controllers\DeveloperController::class, 'deleteUser'])->name('developer.users.delete');
     Route::post('/developer/users', [App\Http\Controllers\DeveloperController::class, 'createUser'])->name('developer.users.create');
+    Route::delete('/seller/{user}', [App\Http\Controllers\SellerController::class, 'destroy'])->name('seller.destroy');
 });

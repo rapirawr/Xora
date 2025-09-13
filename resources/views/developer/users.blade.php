@@ -103,7 +103,7 @@
                                 <!-- Delete Button (disabled for current user) -->
                                 @if($user->id !== auth()->id())
                                 <button type="button" class="action-btn delete-btn"
-                                        onclick="openDeleteModal({{ $user->id }}, '{{ $user->name }}')">
+                                        onclick="openDeleteModal({{ $user->id }}, '{{ $user->name }}', '{{ $user->role }}')">
                                     <i class="fas fa-trash"></i>
                                     <span>Delete</span>
                                 </button>
@@ -862,9 +862,13 @@ function openEditModal(userId, userName, userRole) {
     openModal('editRoleModal');
 }
 
-function openDeleteModal(userId, userName) {
+function openDeleteModal(userId, userName, userRole) {
     document.getElementById('deleteUserName').textContent = userName;
-    document.getElementById('deleteUserForm').action = `/developer/users/${userId}`;
+    if (userRole === 'seller') {
+        document.getElementById('deleteUserForm').action = `/seller/${userId}`;
+    } else {
+        document.getElementById('deleteUserForm').action = `/developer/users/${userId}`;
+    }
     openModal('deleteUserModal');
 }
 

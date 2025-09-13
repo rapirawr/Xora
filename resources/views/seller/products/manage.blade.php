@@ -24,7 +24,6 @@
                             <th>Image</th>
                             <th>Name</th>
                             <th>Price</th>
-                            <th>Rating</th>
                             <th>Sold</th>
                             <th>Stock</th>
                             <th>Actions</th>
@@ -43,19 +42,6 @@
                                 </div>
                             </td>
                             <td class="price-cell">Rp{{ number_format($product->price, 0, ',', '.') }}</td>
-                            <td>
-                                <div class="rating-cell">
-                                    <span class="rating-stars">
-                                        @php
-                                            $avgRating = $product->ratings()->avg('rating') ?? 0;
-                                        @endphp
-                                        @for($i = 1; $i <= 5; $i++)
-                                            <i class="fas fa-star {{ $i <= round($avgRating) ? 'filled' : '' }}"></i>
-                                        @endfor
-                                    </span>
-                                    <span class="rating-value">{{ number_format($avgRating, 1) }}</span>
-                                </div>
-                            </td>
                             <td>{{ $product->sold }}</td>
                             <td>
                                 <span class="stock-badge {{ $product->stock > 10 ? 'good' : ($product->stock > 0 ? 'warning' : 'danger') }}">

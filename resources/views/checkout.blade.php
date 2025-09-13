@@ -70,9 +70,10 @@
                                 </div>
                                 <div class="item-details">
                                     <h4>{{ $item->product->name }}</h4>
-                                    <p class="item-price">Rp{{ number_format($item->product->price, 0, ',', '.') }}</p>
+                                    @if($item->variant)
+                                        <small class="variant-info">{{ $item->variant->variant_name }}: {{ $item->variant->variant_value }}</small>
+                                    @endif
                                     <p class="item-quantity">Quantity: {{ $item->quantity }}</p>
-                                    <p class="item-seller">Seller: {{ $item->product->user->name }}</p>
                                 </div>
                                 <div class="item-subtotal">
                                     <p>Rp{{ number_format($item->subtotal, 0, ',', '.') }}</p>

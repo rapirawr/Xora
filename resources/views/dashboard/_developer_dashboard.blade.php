@@ -1,4 +1,3 @@
-@extends("layouts.app")
 <div class="dashboard-grid">
     <!-- Developer Tools Card -->
     <div class="dashboard-card animated-card">

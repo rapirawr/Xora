@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+<title>{{ config("app.name") }} - Store</title>
+
 @section('content')
 <div class="store-container">
     <!-- Enhanced Sidebar -->
@@ -114,8 +116,22 @@
         <!-- Store Header -->
         <div class="store-header">
             <div class="header-content">
-                <h1 class="neon-text">Black Market Store</h1>
-                <p class="neon-subtext">Top secret items available for underground buyers only.</p>
+            
+                <div class="search-container">
+                    <form action="{{ route('store') }}" method="GET" class="search-form">
+                        <div class="search-input-group">
+                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari produk atau toko..." class="search-input">
+                            <button type="submit" class="search-btn">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                        {{-- @if(request('search'))
+                            <a href="{{ route('store') }}" class="clear-search-btn">
+                                <i class="fas fa-times"></i> Hapus Pencarian
+                            </a>
+                        @endif --}}
+                    </form>
+                </div>
             </div>
         </div>
 
@@ -137,9 +153,6 @@
                                     @if($product->category)
                                         <span class="badge category">{{ ucfirst($product->category) }}</span>
                                     @endif
-                                </div>
-                                <div class="quick-view">
-                                    <i class="fas fa-eye"></i>
                                 </div>
                             </div>
                         </div>
@@ -185,4 +198,98 @@
         </div>
     </main>
 </div>
+
+<style>
+
+.search-container {
+    margin-top: 20px;
+    max-width: auto;
+}
+
+.search-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.search-input-group {
+    display: flex;
+    width: auto;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 25px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.search-input {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    background: transparent;
+    color: #fff;
+    font-size: 16px;
+    outline: none;
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.search-btn {
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 0 25px 25px 0;
+}
+
+.search-btn:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    transform: scale(1.05);
+}
+
+.search-btn i {
+    font-size: 16px;
+}
+
+.clear-search-btn {
+    align-self: flex-start;
+    color: #007bff;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 5px 0;
+    transition: color 0.3s ease;
+}
+
+.clear-search-btn:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+
+
+/* Responsive Search */
+@media (max-width: 768px) {
+    .search-container {
+        margin-top: 15px;
+        max-width: 100%;
+    }
+
+    .search-input-group {
+        border-radius: 20px;
+    }
+
+    .search-btn {
+        border-radius: 0 20px 20px 0;
+        padding: 10px 15px;
+    }
+
+    .search-input {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+}
+</style>
 @endsection

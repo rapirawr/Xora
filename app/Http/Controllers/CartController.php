@@ -29,20 +29,43 @@ class CartController extends Controller
     public function add(Request $request, Product $product)
     {
         $request->validate([
-            'quantity' => 'required|integer|min:1|max:' . $product->stock,
+            'quantity' => 'required|integer|min:1',
+            'variant_id' => 'nullable|exists:product_variants,id',
         ]);
 
         $user = Auth::user();
         $cart = $user->getOrCreateCart();
 
-        // Check if product is already in cart
-        $existingItem = $cart->items()->where('product_id', $product->id)->first();
+        // Determine stock and price based on variant or product
+        $variant = null;
+        $stock = $product->stock;
+        $price = $product->price;
+
+        if ($request->variant_id) {
+            $variant = \App\Models\ProductVariant::find($request->variant_id);
+            if ($variant && $variant->product_id === $product->id) {
+                $stock = $variant->stock ?: $product->stock;
+                $price = $variant->price ?: $product->price;
+            } else {
+                return redirect()->back()->with('error', 'Invalid variant selected.');
+            }
+        }
+
+        $request->validate([
+            'quantity' => 'required|integer|min:1|max:' . $stock,
+        ]);
+
+        // Check if product/variant combination is already in cart
+        $existingItem = $cart->items()
+            ->where('product_id', $product->id)
+            ->where('variant_id', $request->variant_id)
+            ->first();
 
         if ($existingItem) {
             // Update quantity
             $newQuantity = $existingItem->quantity + $request->quantity;
 
-            if ($newQuantity > $product->stock) {
+            if ($newQuantity > $stock) {
                 $message = 'Not enough stock available.';
 
                 if ($request->ajax()) {
@@ -60,8 +83,9 @@ class CartController extends Controller
             // Create new cart item
             $cart->items()->create([
                 'product_id' => $product->id,
+                'variant_id' => $request->variant_id,
                 'quantity' => $request->quantity,
-                'price' => $product->price,
+                'price' => $price,
             ]);
         }
 

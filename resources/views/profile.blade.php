@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+<title> {{ config("app.name") }} - {{ $user->name }}</title>
 @section('content')
 <div class="auth-container">
     <div class="auth-card">
