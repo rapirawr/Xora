@@ -1,2 +1,0 @@
--   [x] Add Google Fonts link for Poppins in resources/views/orders/index.blade.php
--   [x] Update font-family in .receipt-card CSS to 'Poppins', sans-serif
